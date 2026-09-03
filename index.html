@@ -1129,7 +1129,7 @@
     wheelCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function drawWheel(list, rotationDeg) {
+   function drawWheel(list, rotationDeg) {
     const size = wheelCssSize;
     const cx = size / 2;
     const cy = size / 2;
@@ -1138,7 +1138,10 @@
     const felt = '#1a56db';     // azul
     const gold = '#a8332b';     // rojo
     const green = '#2f6b45';    // verde
-    const wheelColors = [felt, gold, green];;
+    const wheelColors = [felt, gold, green];
+    const goldBright = cssVar('--gold-bright');
+    const feltDark = cssVar('--felt-dark');
+    const parchment = cssVar('--parchment');
 
     ctx.clearRect(0, 0, size, size);
 
