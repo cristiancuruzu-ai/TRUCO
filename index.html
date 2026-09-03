@@ -1135,11 +1135,10 @@
     const cy = size / 2;
     const r = size / 2 - 6;
     const ctx = wheelCtx;
-    const felt = cssVar('--felt');
-    const gold = cssVar('--gold');
-    const goldBright = cssVar('--gold-bright');
-    const feltDark = cssVar('--felt-dark');
-    const parchment = cssVar('--parchment');
+    const felt = '#1a56db';     // azul
+    const gold = '#a8332b';     // rojo
+    const green = '#2f6b45';    // verde
+    const wheelColors = [felt, gold, green];;
 
     ctx.clearRect(0, 0, size, size);
 
@@ -1172,7 +1171,7 @@
       ctx.moveTo(0, 0);
       ctx.arc(0, 0, r, startRad, endRad);
       ctx.closePath();
-      ctx.fillStyle = i % 2 === 0 ? felt : gold;
+      ctx.fillStyle = wheelColors[i % 3];
       ctx.fill();
 
       const midDeg = startDeg + anglePerDeg / 2;
