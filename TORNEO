@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TORNEO DE TRUCO MANANTIALES — Cuadro eliminatorio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --felt-dark: #1f4e50;
+    --felt: #1a6e6a;
+    --felt-light: #09585e;
+    --parchment: #ecdfc0;
+    --parchment-line: #cbb98a;
+    --gold: #d1a13f;
+    --gold-bright: #e8bc5c;
+    --ink: #23180f;
+    --oro-red: #a8332b;
+    --green-ok: #2f6b45;
+    --shadow: rgba(0,0,0,0.45);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--felt-dark);
+    background-image:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,0.05), transparent 40%),
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 2px, transparent 2px, transparent 6px);
+    color: var(--parchment);
+    font-family: 'Roboto', 'roboto', serif;
+  }
+
+  .wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 48px 20px 90px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .suits {
+    font-size: 22px;
+    letter-spacing: 18px;
+    color: var(--gold);
+    opacity: 0.85;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', 'Playfair Display', 'Georgia', serif;
+    font-weight: 600;
+    font-size: clamp(28px, 5.5vw, 48px);
+    margin: 0;
+    color: var(--parchment);
+    text-shadow: 0 2px 0 rgba(0,0,0,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .subtitle {
+    margin-top: 10px;
+    font-size: 15px;
+    color: var(--gold-bright);
+    font-style: italic;
+  }
+
+  /* ---------- Setup: libreta ---------- */
+  .libreta {
+    background: var(--parchment);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 28px 26px 26px;
+    box-shadow: 0 18px 40px var(--shadow), 0 0 0 1px rgba(0,0,0,0.15);
+    position: relative;
+  }
+
+  .libreta-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--oro-red);
+    margin: 0 0 18px;
+    font-weight: bold;
+  }
+
+  form.add-row {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 20px;
+  }
+
+  form.add-row input[type="text"] {
+    flex: 1;
+    font-family: inherit;
+    font-size: 17px;
+    padding: 6px 4px;
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid var(--oro-red);
+    color: var(--ink);
+    outline: none;
+  }
+
+  form.add-row input[type="text"]::placeholder {
+    color: #7a6b4f;
+    font-style: italic;
+  }
+
+  form.add-row button {
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--oro-red);
+    color: var(--parchment);
+    border: none;
+    padding: 0 20px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  form.add-row button:hover { background: #8f2a23; }
+
+  ul.teams {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    columns: 2;
+    column-gap: 24px;
+  }
+
+  ul.teams li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 16px;
+    break-inside: avoid;
+  }
+
+  ul.teams li .num { color: var(--oro-red); font-weight: bold; width: 20px; text-align: right; }
+  ul.teams li .name { flex: 1; }
+  ul.teams li button.del {
+    background: none; border: none; color: #9a8a68; cursor: pointer;
+    font-size: 14px; padding: 2px 6px; opacity: 0.6;
+  }
+  ul.teams li button.del:hover { opacity: 1; color: var(--oro-red); }
+
+  .empty-note { margin: 0 0 8px; color: #8a7a5a; font-style: italic; font-size: 15px; }
+
+  /* ---------- Rueda giratoria propia ---------- */
+  #wheelStage { display: none; text-align: center; }
+
+  .wheel-wrap {
+    position: relative;
+    width: min(360px, 90vw);
+    aspect-ratio: 1 / 1;
+    margin: 6px auto 22px;
+    border-radius: 50%;
+    box-shadow: 0 12px 30px var(--shadow);
+  }
+
+  .wheel-pointer {
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 26px;
+    color: var(--gold-bright);
+    text-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    z-index: 2;
+    line-height: 1;
+  }
+
+  #wheelCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  #spinBtn { margin-bottom: 8px; }
+
+  .spin-hint {
+    font-size: 13px;
+    color: var(--felt);
+    font-style: italic;
+    margin: 0 0 20px;
+  }
+
+  .draw-list {
+    max-width: 380px;
+    margin: 8px auto 0;
+    background: var(--parchment);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 20px 22px;
+    box-shadow: 0 12px 28px var(--shadow);
+    text-align: left;
+  }
+
+  .draw-title {
+    margin: 0 0 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--oro-red);
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .draw-list ol {
+    margin: 0 0 18px;
+    padding-left: 22px;
+  }
+  .draw-list ol li {
+    font-size: 15px;
+    padding: 3px 0;
+  }
+
+  .draw-list .primary { display: block; width: 100%; }
+
+  /* ---------- Ventana de resultado del giro ---------- */
+  .result-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 20, 18, 0.62);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .result-overlay.show { display: flex; }
+
+  .result-card {
+    background: var(--parchment);
+    color: var(--ink);
+    border-radius: 6px;
+    padding: 30px 28px 26px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 0 0 3px var(--gold);
+    animation: resultPop 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  }
+
+  @keyframes resultPop {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .result-card .tag {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--oro-red);
+    font-weight: bold;
+    margin-bottom: 14px;
+  }
+
+  .result-name {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-weight: 700;
+    font-size: clamp(24px, 7vw, 36px);
+    color: var(--felt-dark);
+    line-height: 1.2;
+    margin-bottom: 22px;
+    word-break: break-word;
+  }
+
+  .result-card button.primary { display: block; width: 100%; }
+
+  .actions {
+    margin-top: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .count { font-size: 13px; color: var(--felt); letter-spacing: 0.05em; }
+
+  button.primary {
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--felt);
+    color: var(--parchment);
+    border: 2px solid var(--felt-dark);
+    padding: 10px 22px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  button.primary:hover { background: var(--felt-light); }
+  button.primary:disabled { background: #b8ac8c; border-color: #b8ac8c; color: #7a6b4f; cursor: not-allowed; }
+
+  .hint {
+    margin: 14px 0 0;
+    font-size: 12.5px;
+    color: #6b5c3e;
+    line-height: 1.5;
+  }
+
+  .mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 20px;
+    flex-wrap: wrap;
+  }
+  .mode-btn {
+    font-family: 'Georgia', serif;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.05);
+    color: #6b5c3e;
+    border: 2px solid var(--parchment-line);
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .mode-btn:hover { border-color: var(--oro-red); }
+  .mode-btn.active {
+    background: var(--oro-red);
+    color: var(--parchment);
+    border-color: var(--oro-red);
+  }
+
+  form.pair-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 20px;
+    flex-wrap: wrap;
+  }
+  form.pair-row input[type="text"] {
+    flex: 1;
+    min-width: 140px;
+    font-family: inherit;
+    font-size: 16px;
+    padding: 6px 4px;
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid var(--oro-red);
+    color: var(--ink);
+    outline: none;
+  }
+  form.pair-row input[type="text"]::placeholder { color: #7a6b4f; font-style: italic; }
+  .vs-label {
+    font-style: italic;
+    font-size: 13px;
+    color: var(--oro-red);
+    flex-shrink: 0;
+  }
+  form.pair-row button {
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--oro-red);
+    color: var(--parchment);
+    border: none;
+    padding: 0 20px;
+    height: 34px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  form.pair-row button:hover { background: #8f2a23; }
+
+  ul.pair-list { columns: 1; }
+  ul.pair-list li .name { font-size: 16px; }
+  ul.pair-list li .vsmini { color: var(--oro-red); font-style: italic; font-size: 13px; margin: 0 2px; }
+
+  /* ---------- Bracket view ---------- */
+  #bracket { display: none; }
+
+  .round-head {
+    text-align: center;
+    margin: 44px 0 20px;
+  }
+  .round-head .suits-mini {
+    display: block;
+    color: var(--gold);
+    font-size: 15px;
+    letter-spacing: 10px;
+    margin-bottom: 6px;
+  }
+  .round-head h2 {
+    margin: 0;
+    font-family: 'Cormorant Garamond', 'Playfair Display', 'Georgia', serif;
+    font-weight: 600;
+    font-size: 23px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold-bright);
+  }
+  .round-head .desc {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #9fc2b2;
+    font-style: italic;
+  }
+
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .match {
+    background: var(--parchment);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 18px var(--shadow);
+  }
+
+  .match .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--oro-red);
+    margin-bottom: 10px;
+  }
+
+  .team-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    font-size: 16px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    background: rgba(0,0,0,0.04);
+    border: 2px solid transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--ink);
+    transition: background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+  }
+  .team-btn:last-child { margin-bottom: 0; }
+  .team-btn:hover { background: rgba(0,0,0,0.08); }
+  .team-btn.winner {
+    background: rgba(47,107,69,0.15);
+    border-color: var(--green-ok);
+    font-weight: bold;
+  }
+  .team-btn.winner::after { content: "♦ ganó"; font-size: 11px; color: var(--green-ok); font-style: italic; font-weight: normal; }
+  .team-btn.loser { opacity: 0.4; }
+
+  .round-footer {
+    text-align: center;
+    margin-top: 26px;
+  }
+
+  /* Enganche prompt */
+  .enganche-box {
+    max-width: 480px;
+    margin: 30px auto 0;
+    background: var(--parchment);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 22px 24px;
+    box-shadow: 0 12px 28px var(--shadow);
+    text-align: center;
+  }
+  .enganche-box .tag {
+    display: inline-block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--oro-red);
+    background: rgba(168,51,43,0.1);
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .enganche-box p { margin: 0 0 16px; font-size: 15px; line-height: 1.5; }
+  .enganche-box form { display: flex; gap: 8px; }
+  .enganche-box input[type="text"] {
+    flex: 1;
+    font-family: inherit;
+    font-size: 16px;
+    padding: 8px 10px;
+    border: 2px solid var(--parchment-line);
+    border-radius: 3px;
+    outline: none;
+  }
+  .enganche-box input[type="text"]:focus { border-color: var(--oro-red); }
+  .enganche-box button { 
+    font-family: 'Georgia', serif; font-weight: bold; font-size: 14px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    background: var(--oro-red); color: var(--parchment);
+    border: none; padding: 0 18px; border-radius: 3px; cursor: pointer;
+  }
+  .enganche-box button:hover { background: #8f2a23; }
+
+  /* Champion */
+  #champion {
+    display: none;
+    text-align: center;
+    margin-top: 40px;
+  }
+  #champion .suits { font-size: 26px; letter-spacing: 20px; margin-bottom: 14px; }
+  #champion .crown { font-size: 44px; margin-bottom: 6px; }
+  #champion h2 {
+    font-family: 'Cormorant Garamond', 'Playfair Display', 'Georgia', serif;
+    font-weight: 600;
+    font-size: clamp(26px, 6vw, 44px);
+    color: var(--gold-bright);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 8px;
+  }
+  #champion .name {
+    font-size: clamp(22px, 5vw, 34px);
+    color: var(--parchment);
+    background: var(--felt);
+    display: inline-block;
+    padding: 10px 26px;
+    border-radius: 4px;
+    border: 2px solid var(--gold);
+    margin-top: 6px;
+  }
+  #champion .restart {
+    display: block;
+    margin: 30px auto 0;
+    background: transparent;
+    color: var(--gold-bright);
+    border: 2px solid var(--gold);
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 9px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  #champion .restart:hover { background: rgba(209,161,63,0.12); }
+
+  footer.page-footer {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 12px;
+    color: #6f9986;
+    letter-spacing: 0.08em;
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  @media (max-width: 480px) {
+    ul.teams { columns: 1; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="suits">♠ ♣ ♥ ♦</div>
+      <h1>Torneo de Truco MANANTIALES </h1>
+      <div class="subtitle">-</div>
+    </header>
+
+    <!-- SETUP -->
+    <div id="setup">
+      <div class="libreta">
+        <p class="libreta-title">EQUIPOS</p>
+
+        <div class="mode-toggle" id="modeToggle">
+          <button type="button" class="mode-btn active" data-mode="auto">Sortear al azar</button>
+          <button type="button" class="mode-btn" data-mode="manual">Ya tengo los cruces armados</button>
+        </div>
+
+        <div id="autoSetup">
+          <form class="add-row" id="addForm">
+            <input type="text" id="teamInput" placeholder="Nombre de la pareja o equipo…" autocomplete="off" maxlength="40">
+            <button type="submit">Anotar</button>
+          </form>
+
+          <ul class="teams" id="teamList"></ul>
+          <p class="empty-note" id="emptyNote">Todavía no anotaste ningún equipo. Cargá entre 2 y 30 para empezar.</p>
+
+          <div class="actions">
+            <span class="count" id="countLabel"></span>
+            <button class="primary" id="startBtn" disabled>Sortear y comenzar torneo</button>
+          </div>
+        </div>
+
+        <div id="manualSetup" style="display:none;">
+          <form class="add-row pair-row" id="pairForm">
+            <input type="text" id="pairInputA" placeholder="Equipo 1…" autocomplete="off" maxlength="40">
+            <span class="vs-label">vs</span>
+            <input type="text" id="pairInputB" placeholder="Equipo 2… (vacío = libre)" autocomplete="off" maxlength="40">
+            <button type="submit">Anotar cruce</button>
+          </form>
+
+          <ul class="teams pair-list" id="pairList"></ul>
+          <p class="empty-note" id="pairEmptyNote">Todavía no anotaste ningún cruce de la primera ronda.</p>
+
+          <div class="actions">
+            <span class="count" id="pairCountLabel"></span>
+            <button class="primary" id="startManualBtn" disabled>Comenzar torneo con estos cruces</button>
+          </div>
+        </div>
+
+        <p class="hint" id="limitHint">.</p>
+      </div>
+    </div>
+
+    <!-- RUEDA GIRATORIA -->
+    <div id="wheelStage">
+      <div class="round-head">
+        <span class="suits-mini">♦ ♥ ♣ ♠</span>
+        <h2 id="wheelTitle">Sorteo</h2>
+        <div class="desc" id="wheelDesc">Cada giro saca un equipo de la rueda y lo suma al orden</div>
+      </div>
+
+      <div class="wheel-wrap">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="wheelCanvas"></canvas>
+      </div>
+
+      <button class="primary" id="spinBtn">Girar la rueda</button>
+      <p class="spin-hint" id="spinHint">Tocá el botón para sacar el primer equipo</p>
+
+      <div class="draw-list" id="drawList" style="display:none;">
+        <p class="draw-title">Orden del sorteo</p>
+        <ol id="drawOrder"></ol>
+        <button class="primary" id="continueToBracketBtn" disabled>Comenzar torneo</button>
+      </div>
+    </div>
+
+    <!-- RESULTADO DEL GIRO -->
+    <div class="result-overlay" id="resultOverlay">
+      <div class="result-card">
+        <span class="tag">♦ Salió ♦</span>
+        <div class="result-name" id="resultName"></div>
+        <button class="primary" id="eliminateBtn">Eliminar equipo de la rueda</button>
+      </div>
+    </div>
+
+    <!-- BRACKET -->
+    <div id="bracket">
+      <div class="round-head">
+        <span class="suits-mini">♦ ♥ ♣ ♠</span>
+        <h2 id="roundTitle">Ronda 1</h2>
+        <div class="desc" id="roundDesc"></div>
+      </div>
+      <div class="match-grid" id="matchGrid"></div>
+      <div class="round-footer">
+        <button class="primary" id="confirmBtn" disabled>Confirmar ronda</button>
+      </div>
+
+      <div class="enganche-box" id="enganeBox" style="display:none;">
+        <span class="tag">Equipo enganche</span>
+        <p id="enganeText">Quedó un número impar de ganadores. Anotá el nombre del equipo enganche para completar la próxima ronda.</p>
+        <form id="enganeForm">
+          <input type="text" id="enganeInput" placeholder="Nombre del equipo enganche…" autocomplete="off" maxlength="40">
+          <button type="submit">Sumar y seguir</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- CHAMPION -->
+    <div id="champion">
+      <div class="suits">♠ ♣ ♥ ♦</div>
+      <div class="crown">🏆</div>
+      <h2>Campeón del torneo</h2>
+      <div class="name" id="championName"></div>
+      <button class="restart" id="restartBtn">Armar otro torneo</button>
+    </div>
+
+    <footer class="page-footer">36 cartas · cuadro eliminatorio · buena suerte</footer>
+  </div>
+
+<script>
+  // ---------- Setup phase ----------
+  const MAX_TEAMS = 30;
+  const teams = [];
+  const pairs = []; // manual mode: { a, b }
+  let mode = 'auto';
+
+  const modeToggle = document.getElementById('modeToggle');
+  const autoSetup = document.getElementById('autoSetup');
+  const manualSetup = document.getElementById('manualSetup');
+
+  const addForm = document.getElementById('addForm');
+  const teamInput = document.getElementById('teamInput');
+  const teamList = document.getElementById('teamList');
+  const emptyNote = document.getElementById('emptyNote');
+  const countLabel = document.getElementById('countLabel');
+  const startBtn = document.getElementById('startBtn');
+
+  const pairForm = document.getElementById('pairForm');
+  const pairInputA = document.getElementById('pairInputA');
+  const pairInputB = document.getElementById('pairInputB');
+  const pairList = document.getElementById('pairList');
+  const pairEmptyNote = document.getElementById('pairEmptyNote');
+  const pairCountLabel = document.getElementById('pairCountLabel');
+  const startManualBtn = document.getElementById('startManualBtn');
+
+  modeToggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('.mode-btn');
+    if (!btn) return;
+    mode = btn.dataset.mode;
+    modeToggle.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b === btn));
+    autoSetup.style.display = mode === 'auto' ? 'block' : 'none';
+    manualSetup.style.display = mode === 'manual' ? 'block' : 'none';
+  });
+
+  function renderSetup() {
+    teamList.innerHTML = '';
+    teams.forEach((name, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="num">${i + 1}.</span>
+        <span class="name">${escapeHtml(name)}</span>
+        <button class="del" title="Borrar" data-index="${i}">✕</button>
+      `;
+      teamList.appendChild(li);
+    });
+    emptyNote.style.display = teams.length ? 'none' : 'block';
+    const atMax = teams.length >= MAX_TEAMS;
+    countLabel.textContent = atMax
+      ? `${teams.length} / ${MAX_TEAMS} equipos — llegaste al máximo`
+      : (teams.length === 1 ? '1 equipo anotado' : `${teams.length} equipos anotados`);
+    startBtn.disabled = teams.length < 2;
+    teamInput.disabled = atMax;
+    teamInput.placeholder = atMax ? 'Alcanzaste el máximo de 30 equipos' : 'Nombre de la pareja o equipo…';
+    addForm.querySelector('button').disabled = atMax;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  addForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = teamInput.value.trim();
+    if (!name || teams.length >= MAX_TEAMS) return;
+    teams.push(name);
+    teamInput.value = '';
+    renderSetup();
+    teamInput.focus();
+  });
+
+  teamList.addEventListener('click', (e) => {
+    const btn = e.target.closest('button.del');
+    if (!btn) return;
+    teams.splice(Number(btn.dataset.index), 1);
+    renderSetup();
+  });
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ---------- Manual pairing ----------
+  function pairsTeamCount() {
+    return pairs.reduce((acc, p) => acc + (p.b ? 2 : 1), 0);
+  }
+
+  function renderPairs() {
+    pairList.innerHTML = '';
+    pairs.forEach((p, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="num">${i + 1}.</span>
+        <span class="name">${escapeHtml(p.a)}${p.b ? ` <span class="vsmini">vs</span> ${escapeHtml(p.b)}` : ' <em style="opacity:.6;">(libre)</em>'}</span>
+        <button class="del" title="Borrar" data-index="${i}">✕</button>
+      `;
+      pairList.appendChild(li);
+    });
+    pairEmptyNote.style.display = pairs.length ? 'none' : 'block';
+    const total = pairsTeamCount();
+    pairCountLabel.textContent = pairs.length
+      ? `${pairs.length} cruce${pairs.length > 1 ? 's' : ''} · ${total} equipos`
+      : '';
+    startManualBtn.disabled = pairs.length < 1;
+    const atMax = total >= MAX_TEAMS;
+    pairInputA.disabled = atMax;
+    pairInputB.disabled = atMax;
+    pairForm.querySelector('button').disabled = atMax;
+  }
+
+  pairForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const a = pairInputA.value.trim();
+    const b = pairInputB.value.trim();
+    if (!a) return;
+    const extra = b ? 2 : 1;
+    if (pairsTeamCount() + extra > MAX_TEAMS) return;
+    pairs.push({ a, b: b || null });
+    pairInputA.value = '';
+    pairInputB.value = '';
+    renderPairs();
+    pairInputA.focus();
+  });
+
+  pairList.addEventListener('click', (e) => {
+    const btn = e.target.closest('button.del');
+    if (!btn) return;
+    pairs.splice(Number(btn.dataset.index), 1);
+    renderPairs();
+  });
+
+  startManualBtn.addEventListener('click', () => {
+    if (pairs.length < 1) return;
+    setupSection.style.display = 'none';
+    bracketSection.style.display = 'block';
+    roundNumber = 1;
+    currentMatches = pairs.map(p => ({ a: p.a, b: p.b, winner: p.b ? null : p.a }));
+    renderRound();
+  });
+
+  // ---------- Bracket phase ----------
+  const setupSection = document.getElementById('setup');
+  const bracketSection = document.getElementById('bracket');
+  const roundTitle = document.getElementById('roundTitle');
+  const roundDesc = document.getElementById('roundDesc');
+  const matchGrid = document.getElementById('matchGrid');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const enganeBox = document.getElementById('enganeBox');
+  const enganeForm = document.getElementById('enganeForm');
+  const enganeInput = document.getElementById('enganeInput');
+  const championSection = document.getElementById('champion');
+  const championName = document.getElementById('championName');
+  const restartBtn = document.getElementById('restartBtn');
+
+  let roundNumber = 1;
+  let currentMatches = []; // { a, b, winner }
+  let pendingWinners = [];
+
+  function buildMatches(list) {
+    const m = [];
+    for (let i = 0; i < list.length; i += 2) {
+      m.push({ a: list[i], b: list[i + 1] || null, winner: list[i + 1] ? null : list[i] });
+    }
+    return m;
+  }
+
+  // ---------- Rueda giratoria (canvas, animada por requestAnimationFrame) ----------
+  const wheelStage = document.getElementById('wheelStage');
+  const wheelWrap = document.querySelector('.wheel-wrap');
+  const wheelCanvas = document.getElementById('wheelCanvas');
+  const wheelCtx = wheelCanvas.getContext('2d');
+  const spinBtn = document.getElementById('spinBtn');
+  const spinHint = document.getElementById('spinHint');
+  const drawList = document.getElementById('drawList');
+  const drawOrder = document.getElementById('drawOrder');
+  const continueToBracketBtn = document.getElementById('continueToBracketBtn');
+  const wheelTitle = document.getElementById('wheelTitle');
+  const wheelDesc = document.getElementById('wheelDesc');
+  const resultOverlay = document.getElementById('resultOverlay');
+  const resultName = document.getElementById('resultName');
+  const eliminateBtn = document.getElementById('eliminateBtn');
+
+  let remainingTeams = [];
+  let drawnOrder = [];
+  let isSpinning = false;
+  let pendingWinnerIndex = -1;
+  let currentRotationDeg = 0;
+  let wheelCssSize = 300;
+  let spinAnimId = null;
+  let wheelReturnMode = 'start';
+  let wheelExpectedCount = 0;
+
+  function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function setupCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const size = wheelWrap.getBoundingClientRect().width || 300;
+    wheelCssSize = size;
+    wheelCanvas.width = Math.round(size * dpr);
+    wheelCanvas.height = Math.round(size * dpr);
+    wheelCanvas.style.width = size + 'px';
+    wheelCanvas.style.height = size + 'px';
+    wheelCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function drawWheel(list, rotationDeg) {
+    const size = wheelCssSize;
+    const cx = size / 2;
+    const cy = size / 2;
+    const r = size / 2 - 6;
+    const ctx = wheelCtx;
+    const felt = cssVar('--felt');
+    const gold = cssVar('--gold');
+    const goldBright = cssVar('--gold-bright');
+    const feltDark = cssVar('--felt-dark');
+    const parchment = cssVar('--parchment');
+
+    ctx.clearRect(0, 0, size, size);
+
+    const n = list.length;
+    if (n === 0) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = felt;
+      ctx.fill();
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = gold;
+      ctx.stroke();
+      return;
+    }
+
+    const anglePerDeg = 360 / n;
+    const fontSize = n > 18 ? 13 : n > 12 ? 15 : n > 6 ? 17 : 20;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(((rotationDeg % 360) * Math.PI) / 180);
+
+    for (let i = 0; i < n; i++) {
+      const startDeg = i * anglePerDeg;
+      const endDeg = startDeg + anglePerDeg;
+      const startRad = ((startDeg - 90) * Math.PI) / 180;
+      const endRad = ((endDeg - 90) * Math.PI) / 180;
+
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, r, startRad, endRad);
+      ctx.closePath();
+      ctx.fillStyle = i % 2 === 0 ? felt : gold;
+      ctx.fill();
+
+      const midDeg = startDeg + anglePerDeg / 2;
+      const midRad = ((midDeg - 90) * Math.PI) / 180;
+      const flip = midDeg > 90 && midDeg < 270;
+
+      ctx.save();
+      ctx.rotate(midRad);
+      if (flip) ctx.rotate(Math.PI);
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = flip ? 'left' : 'right';
+      ctx.fillStyle = parchment;
+      ctx.font = `bold ${fontSize}px Georgia, serif`;
+
+      let label = list[i];
+      const maxWidth = r - 28;
+      while (ctx.measureText(label).width > maxWidth && label.length > 3) {
+        label = label.slice(0, -1);
+      }
+      if (label !== list[i]) label = label.trim() + '…';
+      const anchorX = flip ? -(r - 14) : (r - 14);
+      ctx.fillText(label, anchorX, 0);
+      ctx.restore();
+    }
+
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = gold;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 17, 0, Math.PI * 2);
+    ctx.fillStyle = goldBright;
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = feltDark;
+    ctx.stroke();
+  }
+
+  function runWheelDraw(list, mode) {
+    wheelReturnMode = mode; // 'start' | 'round'
+    wheelExpectedCount = list.length;
+    setupSection.style.display = 'none';
+    bracketSection.style.display = 'none';
+    wheelStage.style.display = 'block';
+    resultOverlay.classList.remove('show');
+    drawList.style.display = 'none';
+    drawOrder.innerHTML = '';
+    remainingTeams = [...list];
+    drawnOrder = [];
+    isSpinning = false;
+    currentRotationDeg = 0;
+    if (spinAnimId) cancelAnimationFrame(spinAnimId);
+    spinBtn.style.display = 'inline-block';
+    spinBtn.disabled = false;
+    spinBtn.textContent = 'Girar la rueda';
+    spinHint.textContent = 'Tocá el botón para sacar el primer equipo';
+    continueToBracketBtn.disabled = true;
+    continueToBracketBtn.textContent = mode === 'start' ? 'Comenzar torneo' : 'Continuar a la próxima ronda';
+    wheelTitle.textContent = mode === 'start' ? 'Sorteo' : `Sorteo · Ronda ${roundNumber + 1}`;
+    wheelDesc.textContent = mode === 'start'
+      ? 'Cada giro saca un equipo de la rueda y lo suma al orden'
+      : 'Cada giro saca un ganador y arma el orden de la próxima ronda';
+    requestAnimationFrame(() => {
+      setupCanvas();
+      drawWheel(remainingTeams, currentRotationDeg);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  startBtn.addEventListener('click', () => runWheelDraw(teams, 'start'));
+
+  function easeOutQuint(t) {
+    return 1 - Math.pow(1 - t, 5);
+  }
+
+  function spinWheel() {
+    if (isSpinning || remainingTeams.length === 0) return;
+    isSpinning = true;
+    spinBtn.disabled = true;
+    spinHint.textContent = 'Girando…';
+
+    const n = remainingTeams.length;
+    const anglePerDeg = 360 / n;
+    const winnerIndex = Math.floor(Math.random() * n);
+    const mid = winnerIndex * anglePerDeg + anglePerDeg / 2;
+
+    const currentMod = ((currentRotationDeg % 360) + 360) % 360;
+    const desiredMod = (360 - mid) % 360;
+    const deltaForward = (desiredMod - currentMod + 360) % 360;
+    const fullSpins = 5 + Math.floor(Math.random() * 3);
+
+    const startRotation = currentRotationDeg;
+    const endRotation = startRotation + deltaForward + fullSpins * 360;
+    const duration = 4400;
+    let startTime = null;
+
+    pendingWinnerIndex = winnerIndex;
+
+    function frame(ts) {
+      if (startTime === null) startTime = ts;
+      const elapsed = ts - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = easeOutQuint(t);
+      currentRotationDeg = startRotation + (endRotation - startRotation) * eased;
+      drawWheel(remainingTeams, currentRotationDeg);
+      if (t < 1) {
+        spinAnimId = requestAnimationFrame(frame);
+      } else {
+        currentRotationDeg = endRotation;
+        spinAnimId = null;
+        handleSpinEnd();
+      }
+    }
+    spinAnimId = requestAnimationFrame(frame);
+  }
+
+  spinBtn.addEventListener('click', spinWheel);
+
+  function handleSpinEnd() {
+    if (!isSpinning) return;
+    isSpinning = false;
+
+    const winnerName = remainingTeams[pendingWinnerIndex];
+    resultName.textContent = winnerName;
+    resultOverlay.classList.add('show');
+  }
+
+  eliminateBtn.addEventListener('click', () => {
+    const winnerName = remainingTeams[pendingWinnerIndex];
+    remainingTeams.splice(pendingWinnerIndex, 1);
+    drawnOrder.push(winnerName);
+
+    const li = document.createElement('li');
+    li.textContent = winnerName;
+    drawOrder.appendChild(li);
+    drawList.style.display = 'block';
+
+    resultOverlay.classList.remove('show');
+
+    if (remainingTeams.length === 0) {
+      spinBtn.style.display = 'none';
+      spinHint.textContent = '¡Listo! Se sortearon todos los equipos.';
+      continueToBracketBtn.disabled = false;
+      drawList.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      drawWheel(remainingTeams, currentRotationDeg);
+      spinBtn.disabled = false;
+      spinBtn.textContent = remainingTeams.length === 1 ? 'Girar por el último equipo' : 'Girar la rueda';
+      spinHint.textContent = `Quedan ${remainingTeams.length} equipo${remainingTeams.length > 1 ? 's' : ''} en la rueda`;
+    }
+  });
+
+  continueToBracketBtn.addEventListener('click', () => {
+    if (drawnOrder.length !== wheelExpectedCount) return;
+    wheelStage.style.display = 'none';
+    bracketSection.style.display = 'block';
+    roundNumber = wheelReturnMode === 'start' ? 1 : roundNumber + 1;
+    currentMatches = buildMatches(drawnOrder);
+    renderRound();
+  });
+
+  function renderRound() {
+    enganeBox.style.display = 'none';
+    const totalTeams = currentMatches.reduce((acc, m) => acc + (m.b === null ? 1 : 2), 0);
+    const isFinal = currentMatches.length === 1;
+    roundTitle.textContent = isFinal ? 'Final' : `Ronda ${roundNumber}`;
+    roundDesc.textContent = isFinal
+      ? 'El ganador se lleva el torneo'
+      : `${totalTeams} equipos · ${currentMatches.length} partido${currentMatches.length > 1 ? 's' : ''}`;
+
+    matchGrid.innerHTML = '';
+    currentMatches.forEach((match, i) => {
+      const div = document.createElement('div');
+      div.className = 'match';
+      const label = isFinal ? 'Gran final' : `Mesa ${i + 1}`;
+
+      if (match.b === null) {
+        div.innerHTML = `
+          <div class="label">${label}</div>
+          <div class="team-btn winner">${escapeHtml(match.a)} <em style="opacity:.6;font-weight:normal;">(libre)</em></div>
+        `;
+      } else {
+        div.innerHTML = `
+          <div class="label">${label}</div>
+          <button type="button" class="team-btn ${cls(match, match.a)}" data-match="${i}" data-side="a">${escapeHtml(match.a)}</button>
+          <button type="button" class="team-btn ${cls(match, match.b)}" data-match="${i}" data-side="b">${escapeHtml(match.b)}</button>
+        `;
+      }
+      matchGrid.appendChild(div);
+    });
+    updateConfirmState();
+  }
+
+  function cls(match, side) {
+    if (!match.winner) return '';
+    return match.winner === side ? 'winner' : 'loser';
+  }
+
+  matchGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.team-btn[data-match]');
+    if (!btn) return;
+    const idx = Number(btn.dataset.match);
+    const side = btn.dataset.side;
+    currentMatches[idx].winner = side === 'a' ? currentMatches[idx].a : currentMatches[idx].b;
+    renderRound();
+  });
+
+  function updateConfirmState() {
+    const allDecided = currentMatches.every(m => m.winner);
+    confirmBtn.disabled = !allDecided;
+  }
+
+  function advanceRound(winners) {
+    if (winners.length === 2) {
+      // son los dos finalistas: sin rueda, se arma el cruce directo
+      roundNumber++;
+      currentMatches = buildMatches(winners);
+      renderRound();
+      return;
+    }
+    runWheelDraw(winners, 'round');
+  }
+
+  confirmBtn.addEventListener('click', () => {
+    const winners = currentMatches.map(m => m.winner);
+
+    if (winners.length === 1) {
+      showChampion(winners[0]);
+      return;
+    }
+
+    if (winners.length % 2 === 1) {
+      pendingWinners = winners;
+      enganeBox.style.display = 'block';
+      enganeInput.value = '';
+      enganeInput.focus();
+      confirmBtn.disabled = true;
+      enganeBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    advanceRound(winners);
+  });
+
+  enganeForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = enganeInput.value.trim();
+    if (!name) return;
+    const winners = [...pendingWinners, name];
+    advanceRound(winners);
+  });
+
+  function showChampion(name) {
+    bracketSection.style.display = 'none';
+    championSection.style.display = 'block';
+    championName.textContent = name;
+    championSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  restartBtn.addEventListener('click', () => {
+    teams.length = 0;
+    pairs.length = 0;
+    resultOverlay.classList.remove('show');
+    renderSetup();
+    renderPairs();
+    mode = 'auto';
+    modeToggle.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'auto'));
+    autoSetup.style.display = 'block';
+    manualSetup.style.display = 'none';
+    championSection.style.display = 'none';
+    wheelStage.style.display = 'none';
+    if (spinAnimId) cancelAnimationFrame(spinAnimId);
+    isSpinning = false;
+    remainingTeams = [];
+    drawnOrder = [];
+    currentRotationDeg = 0;
+    setupSection.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  renderSetup();
+  renderPairs();
+</script>
+</body>
+</html>
