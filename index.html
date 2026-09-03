@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -161,7 +161,7 @@
 
   .wheel-wrap {
     position: relative;
-    width: min(390px, 120vw);
+    width: min(360px, 90vw);
     aspect-ratio: 1 / 1;
     margin: 6px auto 22px;
     border-radius: 50%;
@@ -195,9 +195,24 @@
     margin: 0 0 20px;
   }
 
+  .wheel-layout {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .wheel-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .draw-list {
-    max-width: 380px;
-    margin: 8px auto 0;
+    flex: 0 1 320px;
+    max-width: 320px;
+    margin: 0;
     background: var(--parchment);
     color: var(--ink);
     border-radius: 4px;
@@ -310,6 +325,116 @@
     font-size: 12.5px;
     color: #6b5c3e;
     line-height: 1.5;
+  }
+
+  /* ---------- Panel de premio ---------- */
+  .prize-box {
+    margin-top: 20px;
+    background: var(--parchment);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 22px 24px;
+    box-shadow: 0 18px 40px var(--shadow), 0 0 0 1px rgba(0,0,0,0.15);
+  }
+
+  .prize-title {
+    margin: 0 0 16px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--oro-red);
+    font-weight: bold;
+  }
+
+  .prize-inputs {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .prize-inputs label {
+    flex: 1 1 160px;
+    font-size: 12.5px;
+    color: #6b5c3e;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: bold;
+  }
+
+  .prize-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    border-bottom: 2px solid var(--oro-red);
+    padding: 4px 2px;
+  }
+
+  .prize-input-wrap span {
+    font-size: 15px;
+    color: var(--oro-red);
+    font-weight: bold;
+  }
+
+  .prize-input-wrap input[type="number"] {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    font-family: inherit;
+    font-size: 17px;
+    padding: 2px 0;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    outline: none;
+  }
+
+  .prize-results {
+    border-top: 1px dashed var(--parchment-line);
+    padding-top: 14px;
+  }
+
+  .prize-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 14px;
+    padding: 4px 0;
+    color: #4a3f2a;
+  }
+
+  .prize-row.prize-final {
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 2px solid var(--felt);
+    font-size: 16px;
+    color: var(--felt-dark);
+  }
+
+  .prize-row.prize-final strong {
+    font-size: 22px;
+    color: var(--oro-red);
+  }
+
+  .prize-badge {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    background: var(--felt);
+    color: var(--parchment);
+    border: 2px solid var(--gold);
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 10px 24px var(--shadow);
+    z-index: 40;
+  }
+
+  @media (max-width: 480px) {
+    .prize-badge { bottom: 10px; right: 10px; left: 10px; text-align: center; }
   }
 
   .mode-toggle {
@@ -536,6 +661,13 @@
     border: 2px solid var(--gold);
     margin-top: 6px;
   }
+  #champion .champion-prize {
+    margin-top: 18px;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-weight: 700;
+    font-size: clamp(20px, 4.5vw, 28px);
+    color: var(--gold-bright);
+  }
   #champion .restart {
     display: block;
     margin: 30px auto 0;
@@ -619,6 +751,49 @@
 
         <p class="hint" id="limitHint">.</p>
       </div>
+
+      <div class="prize-box" id="prizeBox">
+        <p class="prize-title">💰 Premio del torneo</p>
+        <div class="prize-inputs">
+          <label>
+            Valor de inscripción
+            <div class="prize-input-wrap">
+              <span>$</span>
+              <input type="number" id="entryFeeInput" min="0" step="1" placeholder="0">
+            </div>
+          </label>
+          <label>
+            Va al premio
+            <div class="prize-input-wrap">
+              <input type="number" id="discountPercentInput" min="0" max="100" step="1" placeholder="0">
+              <span>%</span>
+            </div>
+          </label>
+        </div>
+        <div class="prize-results">
+          <div class="prize-row">
+            <span>Participantes (con enganches)</span>
+            <strong id="prizeParticipants">0</strong>
+          </div>
+          <div class="prize-row">
+            <span>Recaudación total</span>
+            <strong id="prizeTotal">$0</strong>
+          </div>
+          <div class="prize-row">
+            <span>Para la organización</span>
+            <strong id="prizeHouse">$0</strong>
+          </div>
+          <div class="prize-row prize-final">
+            <span>Premio del campeón</span>
+            <strong id="prizeAmount">$0</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREMIO (insignia visible en todas las pantallas) -->
+    <div class="prize-badge" id="prizeBadge" style="display:none;">
+      🏆 Premio: <span id="prizeBadgeAmount">$0</span>
     </div>
 
     <!-- RUEDA GIRATORIA -->
@@ -629,18 +804,22 @@
         <div class="desc" id="wheelDesc">Cada giro saca un equipo de la rueda y lo suma al orden</div>
       </div>
 
-      <div class="wheel-wrap">
-        <div class="wheel-pointer">▼</div>
-        <canvas id="wheelCanvas"></canvas>
-      </div>
+      <div class="wheel-layout">
+        <div class="wheel-column">
+          <div class="wheel-wrap">
+            <div class="wheel-pointer">▼</div>
+            <canvas id="wheelCanvas"></canvas>
+          </div>
 
-      <button class="primary" id="spinBtn">Girar la rueda</button>
-      <p class="spin-hint" id="spinHint">Tocá el botón para sacar el primer equipo</p>
+          <button class="primary" id="spinBtn">Girar la rueda</button>
+          <p class="spin-hint" id="spinHint">Tocá el botón para sacar el primer equipo</p>
+        </div>
 
-      <div class="draw-list" id="drawList" style="display:none;">
-        <p class="draw-title">Orden del sorteo</p>
-        <ol id="drawOrder"></ol>
-        <button class="primary" id="continueToBracketBtn" disabled>Comenzar torneo</button>
+        <div class="draw-list" id="drawList" style="display:none;">
+          <p class="draw-title">Orden del sorteo</p>
+          <ol id="drawOrder"></ol>
+          <button class="primary" id="continueToBracketBtn" disabled>Comenzar torneo</button>
+        </div>
       </div>
     </div>
 
@@ -681,6 +860,7 @@
       <div class="crown">🏆</div>
       <h2>Campeón del torneo</h2>
       <div class="name" id="championName"></div>
+      <div class="champion-prize" id="championPrize" style="display:none;"></div>
       <button class="restart" id="restartBtn">Armar otro torneo</button>
     </div>
 
@@ -713,6 +893,51 @@
   const pairCountLabel = document.getElementById('pairCountLabel');
   const startManualBtn = document.getElementById('startManualBtn');
 
+  // ---------- Premio ----------
+  const entryFeeInput = document.getElementById('entryFeeInput');
+  const discountPercentInput = document.getElementById('discountPercentInput');
+  const prizeParticipants = document.getElementById('prizeParticipants');
+  const prizeTotal = document.getElementById('prizeTotal');
+  const prizeHouse = document.getElementById('prizeHouse');
+  const prizeAmount = document.getElementById('prizeAmount');
+  const prizeBadge = document.getElementById('prizeBadge');
+  const prizeBadgeAmount = document.getElementById('prizeBadgeAmount');
+
+  let engancheCount = 0;
+
+  function formatMoney(n) {
+    return '$' + Math.round(n).toLocaleString('es-AR');
+  }
+
+  function participantCount() {
+    const base = mode === 'auto' ? teams.length : pairsTeamCount();
+    return base + engancheCount;
+  }
+
+  function updatePrize() {
+    const fee = parseFloat(entryFeeInput.value) || 0;
+    const pct = Math.min(Math.max(parseFloat(discountPercentInput.value) || 0, 0), 100);
+    const count = participantCount();
+    const total = fee * count;
+    const prize = (total * pct) / 100;
+    const house = total - prize;
+
+    prizeParticipants.textContent = count;
+    prizeTotal.textContent = formatMoney(total);
+    prizeHouse.textContent = formatMoney(house);
+    prizeAmount.textContent = formatMoney(prize);
+
+    if (fee > 0 && count > 0) {
+      prizeBadge.style.display = 'block';
+      prizeBadgeAmount.textContent = formatMoney(prize);
+    } else {
+      prizeBadge.style.display = 'none';
+    }
+  }
+
+  entryFeeInput.addEventListener('input', updatePrize);
+  discountPercentInput.addEventListener('input', updatePrize);
+
   modeToggle.addEventListener('click', (e) => {
     const btn = e.target.closest('.mode-btn');
     if (!btn) return;
@@ -720,6 +945,7 @@
     modeToggle.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b === btn));
     autoSetup.style.display = mode === 'auto' ? 'block' : 'none';
     manualSetup.style.display = mode === 'manual' ? 'block' : 'none';
+    updatePrize();
   });
 
   function renderSetup() {
@@ -742,6 +968,7 @@
     teamInput.disabled = atMax;
     teamInput.placeholder = atMax ? 'Alcanzaste el máximo de 30 equipos' : 'Nombre de la pareja o equipo…';
     addForm.querySelector('button').disabled = atMax;
+    updatePrize();
   }
 
   function escapeHtml(str) {
@@ -802,6 +1029,7 @@
     pairInputA.disabled = atMax;
     pairInputB.disabled = atMax;
     pairForm.querySelector('button').disabled = atMax;
+    updatePrize();
   }
 
   pairForm.addEventListener('submit', (e) => {
@@ -1197,20 +1425,34 @@
     e.preventDefault();
     const name = enganeInput.value.trim();
     if (!name) return;
+    engancheCount++;
+    updatePrize();
     const winners = [...pendingWinners, name];
     advanceRound(winners);
   });
+
+  const championPrize = document.getElementById('championPrize');
 
   function showChampion(name) {
     bracketSection.style.display = 'none';
     championSection.style.display = 'block';
     championName.textContent = name;
+
+    const fee = parseFloat(entryFeeInput.value) || 0;
+    if (fee > 0) {
+      championPrize.textContent = `🏆 Premio: ${prizeAmount.textContent}`;
+      championPrize.style.display = 'block';
+    } else {
+      championPrize.style.display = 'none';
+    }
+
     championSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   restartBtn.addEventListener('click', () => {
     teams.length = 0;
     pairs.length = 0;
+    engancheCount = 0;
     resultOverlay.classList.remove('show');
     renderSetup();
     renderPairs();
