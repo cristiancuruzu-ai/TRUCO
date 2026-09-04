@@ -6,7 +6,7 @@
 <title>TORNEO DE TRUCO MANANTIALES — Cuadro eliminatorio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --felt-dark: #1f4e50;
@@ -39,7 +39,7 @@
     position: fixed;
     top: 0;
     left: 18px;
-    width: clamp(50px, 10vw, 100px);
+    width: clamp(60px, 10vw, 110px);
     height: auto;
     filter: drop-shadow(4px 8px 6px rgba(0,0,0,0.55)) drop-shadow(0 14px 14px rgba(0,0,0,0.35));
     z-index: 30;
@@ -69,7 +69,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 14px;
     flex-wrap: nowrap;
   }
 
@@ -368,6 +368,7 @@
     border-radius: 4px;
     padding: 22px 24px;
     box-shadow: 0 18px 40px var(--shadow), 0 0 0 1px rgba(0,0,0,0.15);
+    font-family: 'Cormorant Garamond', Georgia, serif;
   }
 
   .prize-title {
@@ -446,7 +447,9 @@
   }
 
   .prize-row.prize-final strong {
-    font-size: 22px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 800;
+    font-size: 24px;
     color: var(--oro-red);
   }
 
