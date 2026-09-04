@@ -73,66 +73,16 @@
     flex-wrap: nowrap;
   }
 
- .truco-cards-photo {
-  display: flex;
-  justify-content: center;
-  flex-shrink: 0;
-  
-  /* ⬇️ Empuja la base de las cartas hacia abajo */
-  align-items: flex-end; 
-  
-  /* 📐 Altura del área del abanico (ajustala según tu diseño) */
-  height: 240px; 
-}
+  .truco-cards-photo {
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 
-.truco-cards-photo img {
-  width: clamp(70px, 20vw, 160px);
-  height: auto;
-  filter: drop-shadow(0 10px 8px rgba(0,0,0,0.5)) drop-shadow(0 22px 20px rgba(0,0,0,0.35));
-  
-  /* 🃏 Junta las cartas para que se encimen (ajusta el -30px si quedan muy separadas) */
-  margin: 0 -30px; 
-  
-  /* 🎯 Clave: El eje de rotación se fija abajo para que roten como un abanico real */
-  transform-origin: bottom center; 
-  
-  /* ⏱️ Suaviza el movimiento cuando el jugador pasa el mouse */
-  transition: transform 0.2s ease, z-index 0s;
-  position: relative;
-}
-
-/* ========================================================
-   🔄 ROTACIÓN EXCLUSIVA PARA CADA CARTA (FIJAS EN HTML)
-   ======================================================== */
-
-/* Primera carta (Izquierda): Se inclina a la izquierda y baja un poco */
-.truco-cards-photo img:nth-child(1) {
-  transform: rotate(-12deg) translateY(10px);
-  z-index: 1;
-}
-
-/* Segunda carta (Centro): Queda recta y un poco más alta que las demás */
-.truco-cards-photo img:nth-child(2) {
-  transform: rotate(0deg) translateY(0px);
-  z-index: 2; /* Queda por encima de la primera */
-}
-
-/* Tercera carta (Derecha): Se inclina a la derecha y baja un poco */
-.truco-cards-photo img:nth-child(3) {
-  transform: rotate(12deg) translateY(10px);
-  z-index: 3; /* Queda por encima de la segunda */
-}
-
-/* ========================================================
-   🔥 EFECTO HOVER: Al pasar el mouse por encima de una carta
-   ======================================================== */
-.truco-cards-photo img:hover {
-  /* ⬆️ Se endereza por completo y sube para destacar */
-  transform: rotate(0deg) translateY(-35px) scale(1.05); 
-  
-  /* 🔝 Se posiciona al frente de absolutamente todas las demás */
-  z-index: 10 !important; 
-}
+  .truco-cards-photo img {
+    width: clamp(70px, 20vw, 160px);
+    height: auto;
+    filter: drop-shadow(0 10px 8px rgba(0,0,0,0.5)) drop-shadow(0 22px 20px rgba(0,0,0,0.35));
   }
 
   h1 {
